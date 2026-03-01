@@ -18,7 +18,8 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/reyxbo/reyfetch/"
+Homepage = "https://www.reyxbo.com"
+Repository = "https://github.com/reyxbo/reyfetch-py.git"
 
 [build-system]
 requires = ["hatchling"]
