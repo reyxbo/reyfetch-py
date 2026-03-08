@@ -8,7 +8,6 @@
 @Explain : Baidu Web fetch methods.
 """
 
-
 from typing import TypedDict
 from enum import StrEnum
 from reydb import rorm, DatabaseEngine
@@ -21,7 +20,6 @@ from reykit.rtime import now
 
 from ..rbase import FetchRequest, FetchRequestWithDatabase, FetchRequestDatabaseRecord
 
-
 __all__ = (
     'DatabaseORMTableBaiduTrans',
     'FetchRequestBaidu',
@@ -31,10 +29,8 @@ __all__ = (
     'crawl_baidu_trans'
 )
 
-
 FanyiResponseResult = TypedDict('FanyiResponseResult', {'src': str, 'dst': str})
 FanyiResponse = TypedDict('FanyiResponse', {'from': str, 'to': str, 'trans_result': list[FanyiResponseResult]})
-
 
 class DatabaseORMTableBaiduTrans(rorm.Table):
     """
@@ -51,12 +47,10 @@ class DatabaseORMTableBaiduTrans(rorm.Table):
     input_lang: str = rorm.Field(rorm.types.VARCHAR(4), not_null=True, comment='Input original text language.')
     output_lang: str = rorm.Field(rorm.types.VARCHAR(3), not_null=True, comment='Output translation text language.')
 
-
 class FetchRequestBaidu(FetchRequest):
     """
     Request Baidu API fetch type.
     """
-
 
 class FetchRequestBaiduTranslateLangEnum(FetchRequestBaidu, StrEnum):
     """
@@ -92,14 +86,12 @@ class FetchRequestBaiduTranslateLangEnum(FetchRequestBaidu, StrEnum):
     ROM = 'rom'
     HU ='hu'
 
-
 class FetchRequestBaiduTranslateLangAutoEnum(FetchRequestBaidu, StrEnum):
     """
     Request Baidu translate APT language auto enumeration fetch type.
     """
 
     AUTO = 'auto'
-
 
 class FetchRequestBaiduTranslate(FetchRequestBaidu, FetchRequestWithDatabase):
     """
@@ -113,7 +105,6 @@ class FetchRequestBaiduTranslate(FetchRequestBaidu, FetchRequestWithDatabase):
     'API document URL.'
     LangEnum = FetchRequestBaiduTranslateLangEnum
     LangAutoEnum = FetchRequestBaiduTranslateLangAutoEnum
-
 
     def __init__(
         self,
@@ -145,7 +136,6 @@ class FetchRequestBaiduTranslate(FetchRequestBaidu, FetchRequestWithDatabase):
         ## Build Database.
         if self.db_engine is not None:
             self.build_db()
-
 
     def sign(self, text: str, num: int) -> str:
         """
@@ -180,7 +170,6 @@ class FetchRequestBaiduTranslate(FetchRequestBaidu, FetchRequestWithDatabase):
         md5 = get_md5(data)
 
         return md5
-
 
     def request(
         self,
@@ -234,7 +223,6 @@ class FetchRequestBaiduTranslate(FetchRequestBaidu, FetchRequestWithDatabase):
 
         return response_json
 
-
     def get_lang(self, text: str) -> FetchRequestBaiduTranslateLangEnum | None:
         """
         Judge and get text language type.
@@ -257,7 +245,6 @@ class FetchRequestBaiduTranslate(FetchRequestBaidu, FetchRequestWithDatabase):
                 return FetchRequestBaiduTranslateLangEnum.EN
             elif is_zh(char):
                 return FetchRequestBaiduTranslateLangEnum.ZH
-
 
     def trans(
         self,
@@ -320,7 +307,6 @@ class FetchRequestBaiduTranslate(FetchRequestBaidu, FetchRequestWithDatabase):
         self.db_record.record()
 
         return trans_text
-
 
     def build_db(self) -> None:
         """
@@ -423,9 +409,7 @@ class FetchRequestBaiduTranslate(FetchRequestBaidu, FetchRequestWithDatabase):
         # Build.
         self.db_engine.build.build(tables=tables, views_stats=views_stats, skip=True)
 
-
     __call__ = trans
-
 
 def crawl_baidu_trans(text: str) -> str:
     """

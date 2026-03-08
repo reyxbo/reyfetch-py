@@ -8,7 +8,6 @@
 @Explain : Douban Web fetch methods.
 """
 
-
 from typing import TypedDict
 from bs4 import BeautifulSoup
 from reydb import rorm, DatabaseEngine
@@ -19,12 +18,10 @@ from reykit.rtime import now
 
 from ..rbase import FetchCrawl
 
-
 __all__ = (
     'DatabaseORMTableDoubanMedia',
     'FetchCrawlDouban'
 )
-
 
 MediaRow = TypedDict(
     'MediaRow', 
@@ -71,7 +68,6 @@ MediaInfo = TypedDict(
     }
 )
 
-
 class DatabaseORMTableDoubanMedia(rorm.Table):
     """
     Database "douban_media" table ORM model.
@@ -105,13 +101,11 @@ class DatabaseORMTableDoubanMedia(rorm.Table):
     image_low: str = rorm.Field(rorm.types.VARCHAR(150), not_null=True, comment='Picture image low resolution URL.')
     video: str = rorm.Field(rorm.types.VARCHAR(150), comment='Preview video Douban page URL.')
 
-
 class FetchCrawlDouban(FetchCrawl):
     """
     Crawl Douban Web fetch type.
     Can create database used "self.build_db" method.
     """
-
 
     def __init__(self, db_engine: DatabaseEngine | None = None) -> None:
         """
@@ -130,7 +124,6 @@ class FetchCrawlDouban(FetchCrawl):
         # Build Database.
         if self.db_engine is not None:
             self.build_db()
-
 
     def build_db(self) -> None:
         """
@@ -224,7 +217,6 @@ class FetchCrawlDouban(FetchCrawl):
 
         # Build.
         self.db_engine.build.build(tables=tables, views_stats=views_stats, skip=True)
-
 
     def crawl_table(self) -> MediaTable:
         """
@@ -368,7 +360,6 @@ class FetchCrawlDouban(FetchCrawl):
             )
 
         return table
-
 
     def crawl_info(self, id_: int) -> MediaInfo:
         """
@@ -549,7 +540,6 @@ class FetchCrawlDouban(FetchCrawl):
             )
 
         return infos
-
 
     def crawl_video_url(self, url: str) -> str:
         """

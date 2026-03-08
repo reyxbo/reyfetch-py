@@ -8,15 +8,12 @@
 @Explain : Toutiao Web fetch methods.
 """
 
-
 from typing import Any, Literal
 from reykit.rnet import request
-
 
 __all__ = (
     'crawl_toutiao_hot_search',
 )
-
 
 def crawl_toutiao_hot_search() -> list[dict[Literal['title', 'type', 'label', 'hot', 'url', 'image'], Any]]:
     """

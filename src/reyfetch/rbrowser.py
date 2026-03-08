@@ -8,7 +8,6 @@
 @Explain : Browser methods.
 """
 
-
 from typing import Any, Literal
 from traceback import format_exc
 from enum import StrEnum
@@ -20,7 +19,6 @@ from reykit.rtime import TimeMark, now, sleep
 
 from .rbase import FetchCrawl
 
-
 __all__ = (
     'CrawlBrowserPageStatusEnum',
     'DatabaseORMTableCrawlBrowserPage',
@@ -30,7 +28,6 @@ __all__ = (
     'wait_db_crawl_task',
     'crawl_page_use_db'
 )
-
 
 class CrawlBrowserPageStatusEnum(StrEnum):
     """
@@ -45,7 +42,6 @@ class CrawlBrowserPageStatusEnum(StrEnum):
     'Crawl failed.'
     CANCEL = 'cancel'
     'Crawl cancelled.'
-
 
 class DatabaseORMTableCrawlBrowserPage(rorm.Table):
     """
@@ -62,12 +58,10 @@ class DatabaseORMTableCrawlBrowserPage(rorm.Table):
     status: int = rorm.Field(rorm.ENUM(CrawlBrowserPageStatusEnum), field_default=CrawlBrowserPageStatusEnum.WAIT, not_null=True, comment='Crawl status.')
     note: str = rorm.Field(rorm.types.VARCHAR(500), comment='Note.')
 
-
 class FetchCrawlBrowser(FetchCrawl):
     """
     Control browser fetch type.
     """
-
 
     def __init__(
         self,
@@ -118,7 +112,6 @@ class FetchCrawlBrowser(FetchCrawl):
         if self.db_engine is not None:
             self.__loop_crawl_by_db()
 
-
     def build_db(self) -> None:
         """
         Check and build database tables.
@@ -138,7 +131,6 @@ class FetchCrawlBrowser(FetchCrawl):
         ## WeChat.
         self.db_engine.build.build(tables=tables, skip=True)
 
-
     def __loop_crawl_by_db(self) -> None:
         """
         Loop crawl by database table.
@@ -151,13 +143,11 @@ class FetchCrawlBrowser(FetchCrawl):
         # Loop.
         while True:
 
-
             ## Crawl.
             self.__crawl_by_db()
 
             ## Sleep.
             sleep(1)
-
 
     def __crawl_by_db(self) -> None:
         """
@@ -192,7 +182,6 @@ class FetchCrawlBrowser(FetchCrawl):
             }
             self.db_engine.execute.update('crawl_browser_page', data)
 
-
     def request(
         self,
         url: str,
@@ -218,7 +207,6 @@ class FetchCrawlBrowser(FetchCrawl):
         # Request.
         self.driver.get(url)
 
-
     @property
     def page(self) -> str:
         """
@@ -234,9 +222,7 @@ class FetchCrawlBrowser(FetchCrawl):
 
         return page_source
 
-
     __call__ = request
-
 
 def crawl_page(
     url: str,
@@ -265,7 +251,6 @@ def crawl_page(
     page = browser.page
 
     return page
-
 
 def add_db_crawl_task(
     db_engine: DatabaseEngine,
@@ -302,7 +287,6 @@ def add_db_crawl_task(
     record_id: int = result.scalar()
 
     return record_id
-
 
 def wait_db_crawl_task(
     db_engine: DatabaseEngine,
@@ -354,7 +338,6 @@ def wait_db_crawl_task(
 
         # Sleep.
         sleep(1)
-
 
 def crawl_page_use_db(
     db_engine: DatabaseEngine,

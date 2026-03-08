@@ -8,12 +8,10 @@
 @Explain : General fetch methods.
 """
 
-
 from json import loads as json_loads
 from reykit.rnet import request
 from reykit.rre import search
 from reykit.rtime import now
-
 
 __all__ = (
     'crawl_calendar',
@@ -117,7 +115,6 @@ def crawl_calendar(
         row['work'] = is_work_day
 
     return table
-
 
 def crawl_lunar_calendar(
     year: int | None = None,

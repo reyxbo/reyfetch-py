@@ -8,17 +8,14 @@
 @Explain : Weibo Web fetch methods.
 """
 
-
 from typing import Any, Literal
 from fake_useragent import UserAgent
 from reykit.rnet import request, join_url
 from reykit.rtime import now
 
-
 __all__ = (
     'crawl_weibo_hot_search',
 )
-
 
 def crawl_weibo_hot_search() -> list[dict[Literal['rank', 'time', 'title', 'type', 'hot', 'url'], Any]]:
     """

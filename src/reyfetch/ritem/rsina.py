@@ -8,19 +8,16 @@
 @Explain : Sina Web fetch methods.
 """
 
-
 from typing import TypedDict, Literal
 from reykit.rbase import throw
 from reykit.rnet import request
 from reykit.rre import search, findall, sub
 from reykit.rtime import now
 
-
 __all__ = (
     'crawl_sina_search_market',
     'crawl_sina_stock_info'
 )
-
 
 SinaStockInfo = TypedDict(
     'SinaStockInfo',
@@ -41,7 +38,6 @@ SinaStockInfo = TypedDict(
         'swing': float
     }
 )
-
 
 def crawl_sina_search_market(keyword: str) -> list[dict[Literal['code', 'name', 'type', 'url'], str]]:
     """
@@ -114,7 +110,6 @@ def crawl_sina_search_market(keyword: str) -> list[dict[Literal['code', 'name', 
             table.append(row)
 
     return table
-
 
 def crawl_sina_stock_info(code: str | list[str]) -> list[SinaStockInfo]:
     """

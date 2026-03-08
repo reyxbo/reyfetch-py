@@ -8,7 +8,6 @@
 @Explain : Ali Web fetch methods.
 """
 
-
 from typing import Any, TypedDict, NotRequired, Literal, overload, NoReturn
 from collections.abc import Hashable, Iterable, Generator
 from json import loads as json_loads
@@ -19,13 +18,11 @@ from reykit.rtime import now
 
 from ..rbase import FetchRequest, FetchRequestWithDatabase, FetchRequestDatabaseRecord
 
-
 __all__ = (
     'DatabaseORMTableAliQwen',
     'FetchRequestAli',
     'FetchRequestAliQwen'
 )
-
 
 # Key 'role' value 'system' only in first.
 # Key 'role' value 'user' and 'assistant' can mix.
@@ -53,7 +50,6 @@ type ChatRecordsAppends = list[ChatRecordsAppend]
 ChatReplyGenerator = Generator[str, Any, None]
 ChatThinkGenerator = Generator[str, Any, None]
 
-
 class DatabaseORMTableAliQwen(rorm.Table):
     """
     Database `ali_qwen` table ORM model.
@@ -74,12 +70,10 @@ class DatabaseORMTableAliQwen(rorm.Table):
     token_output_think: int = rorm.Field(comment='Usage output think Token.')
     model: str = rorm.Field(rorm.types.VARCHAR(100), not_null=True, comment='Model name.')
 
-
 class FetchRequestAli(FetchRequest):
     """
     Reuqest Ali API fetch type.
     """
-
 
 class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
     """
@@ -93,7 +87,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
     'API document URL.'
     model = 'qwen-turbo-latest'
     'API AI model type.'
-
 
     def __init__(
         self,
@@ -137,7 +130,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
         ## Build Database.
         if self.db_engine is not None:
             self.build_db()
-
 
     @overload
     def request(self, json: dict, stream: Literal[True]) -> Iterable[str]: ...
@@ -197,7 +189,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
 
         return response_json
 
-
     def extract_response_text(self, response_json: dict) -> str | None:
         """
         Extract reply text from response JSON.
@@ -219,7 +210,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
             response_text = None
 
         return response_text
-
 
     def extract_response_token(self, response_json: dict) -> ChatRecordToken | None:
         """
@@ -245,7 +235,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
             }
 
         return token_data
-
 
     def extract_response_web(self, response_json: dict) -> ChatResponseWeb | None:
         """
@@ -276,7 +265,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
 
         return web_data
 
-
     def extract_response_think(self, response_json: dict) -> str | None:
         """
         Extract deep think text from response JSON.
@@ -296,7 +284,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
         response_think = response_think or None
 
         return response_think
-
 
     def extract_response_record(self, response_json: dict) -> ChatRecord:
         """
@@ -332,7 +319,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
 
         return chat_record_reply
 
-
     def extract_response_generator(self, response_iter: Iterable[str]):
         """
         Extract reply generator from response JSON.
@@ -362,7 +348,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
         response_json_first: dict = json_loads(response_line_first)
         chat_record_reply = self.extract_response_record(response_json_first)
         is_think_emptied = not bool(chat_record_reply['think'])
-
 
         def _generator(mode: Literal['text', 'think']) -> Generator[str, Any, None]:
             """
@@ -448,12 +433,10 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
             else:
                 self.insert_db(chat_record_reply)
 
-
         generator_text = _generator('text')
         generator_think = _generator('think')
 
         return chat_record_reply, generator_text, generator_think
-
 
     def append_chat_records_history(
         self,
@@ -516,7 +499,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
 
         # Beyond.
         self.get_chat_records_history(index, history_max_char, history_max_time, True)
-
 
     def get_chat_records_history(
         self,
@@ -588,7 +570,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
                     chat_records_history = chat_records_history[beyond_index:]
 
         return chat_records_history
-
 
     @overload
     def chat(
@@ -802,7 +783,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
 
             return chat_record_reply
 
-
     def polish(self, text: str) -> str:
         """
         Let AI polish text.
@@ -823,7 +803,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
         result = result.strip()
 
         return result
-
 
     def build_db(self) -> None:
         """
@@ -958,7 +937,6 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
         # Build.
         self.db_engine.build.build(tables=tables, views_stats=views_stats, skip=True)
 
-
     def insert_db(self, record: ChatRecord) -> None:
         """
         Insert record to table of database.
@@ -979,6 +957,5 @@ class FetchRequestAliQwen(FetchRequestAli, FetchRequestWithDatabase):
 
         # Insert.
         self.db_record.record()
-
 
     __call__ = chat

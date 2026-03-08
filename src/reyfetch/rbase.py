@@ -8,14 +8,12 @@
 @Explain : Base methods.
 """
 
-
 from typing import Any
 from types import MethodType
 from threading import get_ident as threading_get_ident
 from fake_useragent import UserAgent
 from reydb import Database
 from reykit.rbase import Base
-
 
 __all__ = (
     'FetchBase',
@@ -25,18 +23,15 @@ __all__ = (
     'FetchRequestDatabaseRecord'
 )
 
-
 class FetchBase(Base):
     """
     Fetch base type.
     """
 
-
 class FetchRequest(FetchBase):
     """
     Request API fetch type.
     """
-
 
 class FetchCrawl(FetchBase):
     """
@@ -44,7 +39,6 @@ class FetchCrawl(FetchBase):
     """
 
     ua = UserAgent()
-
 
 class FetchRequestWithDatabase(FetchRequest):
     """
@@ -55,12 +49,10 @@ class FetchRequestWithDatabase(FetchRequest):
     db_engine: Database | None
     build_db: MethodType
 
-
 class FetchRequestDatabaseRecord(FetchRequest):
     """
     Request API fetch type of record into the database, can multi threaded.
     """
-
 
     def __init__(
         self,
@@ -82,7 +74,6 @@ class FetchRequestDatabaseRecord(FetchRequest):
         self.table = table
         self.data: dict[int, dict[str, Any]] = {}
 
-
     def __setitem__(self, key: str, value: Any) -> None:
         """
         Update record data parameter.
@@ -103,7 +94,6 @@ class FetchRequestDatabaseRecord(FetchRequest):
 
         # Update.
         record[key] = value
-
 
     def record(self) -> None:
         """
