@@ -1,25 +1,22 @@
 [project]
-name = "reyfetch"
-version = "1.0.64"
-description = "Web data fetch method set."
+name = "reyclient"
+version = "1.0.1"
+description = "API request client method set."
 readme = "README.md"
 requires-python = ">=3.12"
 license = {file = "LICENSE"}
-keywords = ["rey", "reyxbo", "fetch", "request API", "crawl Web"]
+keywords = ["rey", "reyxbo", "client", "request", "API"]
 authors = [
     {name = "Rey", email = "reyxbo@163.com"}
 ]
 dependencies = [
-    "bs4",
-    "fake_useragent",
     "reydb",
-    "reykit",
-    "selenium"
+    "reykit"
 ]
 
 [project.urls]
 Homepage = "https://www.reyxbo.com"
-Repository = "https://github.com/reyxbo/reyfetch-py.git"
+Repository = "https://github.com/reyxbo/reyclient-py.git"
 
 [build-system]
 requires = ["hatchling"]

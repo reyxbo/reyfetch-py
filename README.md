@@ -1,9 +1,9 @@
-# reyfetch
+# reyclient
 
-> Web data fetch method set.
+> API request client method set.
 
 ## Install
 
 ```
-pip install reyfetch
+pip install reyclient
 ```
