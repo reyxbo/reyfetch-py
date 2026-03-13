@@ -11,7 +11,7 @@
 from typing import Any, Protocol
 from types import MethodType
 from threading import get_ident as threading_get_ident
-from reydb import Database
+from reydb import DatabaseEngine
 from reykit.rbase import Base
 
 __all__ = (
@@ -26,13 +26,13 @@ class ClientBase(Base):
     Client base type.
     """
 
-class ClientWithDatabase(ClientBase, Protocol):
+class ClientWithDatabase(Protocol):
     """
     With database method reuqest API fetch type.
     Can create database used `self.build_db` method.
     """
 
-    db_engine: Database | None
+    db_engine: DatabaseEngine | None
     build_db: MethodType
 
 class ClientDatabaseRecord(ClientBase):

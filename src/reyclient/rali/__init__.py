@@ -10,3 +10,4 @@
 
 from .rbase import *
 from .rqwen import *
+from .rverify import *
