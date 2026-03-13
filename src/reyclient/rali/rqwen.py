@@ -5,7 +5,7 @@
 @Time    : 2025-07-17
 @Author  : Rey
 @Contact : reyxbo@163.com
-@Explain : Ali Web QWen methods.
+@Explain : Ali website qwen methods.
 """
 
 from typing import Any, TypedDict, NotRequired, Literal, overload, NoReturn
@@ -72,7 +72,7 @@ class DatabaseORMTableAliQwen(rorm.Table):
 
 class ClientAliQwen(ClientAli):
     """
-    Request Ali QWen API fetch type.
+    Ali QWen client type.
     Can create database used `self.build_db` method.
     """
 
@@ -98,7 +98,7 @@ class ClientAliQwen(ClientAli):
         Parameters
         ----------
         key : API key.
-        db_engine: Database engine, insert request record to table.
+        db_engine : Database engine, insert request record to table.
         system : AI system description.
         rand : AI reply randomness, value range is `[0,1]`.
         history_max_char : History messages record maximum character count.

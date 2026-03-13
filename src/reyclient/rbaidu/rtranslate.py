@@ -49,7 +49,7 @@ class DatabaseORMTableBaiduTrans(rorm.Table):
 
 class ClientBaiduTranslateLangEnum(ClientBaidu, StrEnum):
     """
-    Request Baidu translate APT language enumeration fetch type.
+    Baidu translate language enumeration client type.
     """
 
     ZH = 'zh'
@@ -83,14 +83,14 @@ class ClientBaiduTranslateLangEnum(ClientBaidu, StrEnum):
 
 class ClientBaiduTranslateLangAutoEnum(ClientBaidu, StrEnum):
     """
-    Request Baidu translate APT language auto enumeration fetch type.
+    Baidu translate APT language auto enumeration client type.
     """
 
     AUTO = 'auto'
 
 class ClientBaiduTranslate(ClientBaidu):
     """
-    Request Baidu translate API fetch type.
+    Baidu translate API client type.
     Can create database used "self.build_db" method.
     """
 
@@ -115,7 +115,7 @@ class ClientBaiduTranslate(ClientBaidu):
         ----------
         appid : APP ID.
         appkey : APP key.
-        db : "Database" instance, insert request record to table.
+        db_engine : Database engine, insert request record to table.
         max_len : Maximun length.
         """
 

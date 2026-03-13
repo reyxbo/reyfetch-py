@@ -10,6 +10,7 @@ authors = [
     {name = "Rey", email = "reyxbo@163.com"}
 ]
 dependencies = [
+    "alibabacloud_dypnsapi20170525",
     "reydb",
     "reykit"
 ]
