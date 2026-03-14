@@ -11,7 +11,7 @@
 from typing import Any, Protocol
 from types import MethodType
 from threading import get_ident as threading_get_ident
-from reydb import DatabaseEngine
+from reydb import DatabaseEngine, DatabaseEngineAsync
 from reykit.rbase import Base
 
 __all__ = (
@@ -32,7 +32,7 @@ class ClientWithDatabase(Protocol):
     Can create database used `self.build_db` method.
     """
 
-    db_engine: DatabaseEngine | None
+    db_engine: DatabaseEngine | DatabaseEngineAsync | None
     build_db: MethodType
 
 class ClientDatabaseRecord(ClientBase):
@@ -42,7 +42,7 @@ class ClientDatabaseRecord(ClientBase):
 
     def __init__(
         self,
-        api: ClientWithDatabase | None = None,
+        client: ClientWithDatabase | None = None,
         table: str | None = None
     ) -> None:
         """
@@ -50,13 +50,13 @@ class ClientDatabaseRecord(ClientBase):
 
         Parameters
         ----------
-        api : `API` instance.
+        client : Client instance.
             - `None`: Not record.
         table : Table name.
         """
 
         # Build.
-        self.api = api
+        self.client = client
         self.table = table
         self.data: dict[int, dict[str, Any]] = {}
 
@@ -71,7 +71,7 @@ class ClientDatabaseRecord(ClientBase):
         """
 
         # Check.
-        if self.api.db_engine is None:
+        if self.client.db_engine is None:
             return
 
         # Parameter.
@@ -87,7 +87,7 @@ class ClientDatabaseRecord(ClientBase):
         """
 
         # Check.
-        if self.api.db_engine is None:
+        if self.client.db_engine is None:
             return
 
         # Parameter.
@@ -95,7 +95,27 @@ class ClientDatabaseRecord(ClientBase):
         record = self.data.setdefault(thread_id, {})
 
         # Insert.
-        self.api.db_engine.execute.insert(self.table, record)
+        self.client.db_engine.sync_engine.execute.insert(self.table, record)
+
+        # Delete.
+        del self.data[thread_id]
+
+    async def async_record(self) -> None:
+        """
+        Asynchronous insert record to table of database.
+        """
+
+        # Check.
+        if self.client.db_engine is None:
+            return
+
+        # Parameter.
+        thread_id = threading_get_ident()
+        record = self.data.setdefault(thread_id, {})
+
+        # Insert.
+        db_engine = self.client.db_engine
+        await db_engine.async_engine.execute.insert(self.table, record)
 
         # Delete.
         del self.data[thread_id]

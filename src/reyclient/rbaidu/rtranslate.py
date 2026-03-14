@@ -40,8 +40,8 @@ class DatabaseORMTableBaiduTrans(rorm.Table):
     __name__ = 'baidu_trans'
     __comment__ = 'Baidu API translate request record table.'
     id: int = rorm.Field(key_auto=True, comment='ID.')
-    request_time: rorm.Datetime = rorm.Field(not_null=True, comment='Request time.')
-    response_time: rorm.Datetime = rorm.Field(not_null=True, comment='Response time.')
+    request_time: rorm.Datetime = rorm.Field(not_null=True, index_n=True, comment='Request time.')
+    response_time: rorm.Datetime = rorm.Field(not_null=True, index_n=True, comment='Response time.')
     input: str = rorm.Field(rorm.types.VARCHAR(6000), not_null=True, comment='Input original text.')
     output: str = rorm.Field(rorm.types.TEXT, not_null=True, comment='Output translation text.')
     input_lang: str = rorm.Field(rorm.types.VARCHAR(4), not_null=True, comment='Input original text language.')
@@ -402,6 +402,6 @@ class ClientBaiduTranslate(ClientBaidu):
         ]
 
         # Build.
-        self.db_engine.build.build(tables=tables, views_stats=views_stats, skip=True)
+        self.db_engine.build(tables=tables, views_stats=views_stats, skip=True)
 
     __call__ = trans

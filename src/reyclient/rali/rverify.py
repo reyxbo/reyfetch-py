@@ -15,8 +15,9 @@ from alibabacloud_credentials.models import Config as AliCredentialConfig
 from alibabacloud_credentials.client import Client as AliCredentialClient
 from alibabacloud_dypnsapi20170525.models import SendSmsVerifyCodeRequest as AliSendRequest, CheckSmsVerifyCodeRequest as AliCheckRequest
 from alibabacloud_tea_util.models import RuntimeOptions as AliRuntimeOptions
-from reydb import rorm, DatabaseEngine
+from reydb import rorm, DatabaseEngine, DatabaseEngineAsync
 from reykit.rbase import throw
+from reykit.rtime import now
 
 from ..rbase import ClientDatabaseRecord
 from .rbase import ClientAli
@@ -35,12 +36,13 @@ class DatabaseORMTableAliVerifySms(rorm.Table):
     __name__ = 'ali_verify_sms'
     __comment__ = 'Ali API verify sms request record table.'
     id: int = rorm.Field(key_auto=True, comment='ID.')
-    send_time: rorm.Datetime = rorm.Field(not_null=True, comment='Send code time.')
-    verify_time: rorm.Datetime = rorm.Field(comment='Verification code time.')
-    phone: str = rorm.Field(rorm.types.CHAR(11), not_null=True, comment='Phone number.')
-    code: str = rorm.Field(rorm.types.VARCHAR(8), not_null=True, comment='Verification code.', len_min=4, len_max=8)
+    request_time: rorm.Datetime = rorm.Field(not_null=True, index_n=True, comment='Request time.')
+    response_time: rorm.Datetime = rorm.Field(not_null=True, index_n=True, comment='Response time.')
+    verify_time: rorm.Datetime = rorm.Field(comment='Verification time.')
+    scene: str = rorm.Field(rorm.types.VARCHAR(20), not_null=True, index_n=True, comment='Usage scene.')
+    phone: str = rorm.Field(rorm.types.CHAR(11), not_null=True, index_n=True, comment='Phone number.')
+    code: str = rorm.Field(rorm.types.VARCHAR(8), not_null=True, index_n=True, comment='Verification code.', len_min=4, len_max=8)
     verified: bool = rorm.Field(field_default='FALSE', not_null=True, comment='Is the verified.')
-    note: str = rorm.Field(rorm.types.VARCHAR(500), comment='Note.')
 
 class ClientAliVerify(ClientAli):
     """
@@ -57,7 +59,7 @@ class ClientAliVerifySms(ClientAliVerify):
         self,
         key_id: str,
         key_secret: str,
-        db_engine: DatabaseEngine | None = None,
+        db_engine: DatabaseEngine | DatabaseEngineAsync | None = None,
         code_len=4,
         valid_m: int = 5,
         interval_s = 60
@@ -103,14 +105,14 @@ class ClientAliVerifySms(ClientAliVerify):
         if self.db_engine is not None:
             self.build_db()
 
-    def send(self, phone: str, note: str | None = None) -> str:
+    def send(self, scene: str, phone: str) -> str:
         """
         Send random verification code sms.
 
         Parameters
         ----------
+        scene : Usage scene, maxinunMaximum 20 characters.
         phone : Phone number.
-        note : Note.
 
         Returns
         -------
@@ -121,6 +123,7 @@ class ClientAliVerifySms(ClientAliVerify):
         valid_time = self.valid_m * 60
         template_param = '{"code":"##code##","min":"%s"}' % self.valid_m
         request = AliSendRequest(
+            scheme_name=scene,
             phone_number=phone,
             sign_name='速通互联验证码',
             template_code='100001',
@@ -133,7 +136,9 @@ class ClientAliVerifySms(ClientAliVerify):
         runtime = AliRuntimeOptions()
 
         # Request.
+        self.db_record['request_time'] = now()
         response = self.client.send_sms_verify_code_with_options(request, runtime)
+        self.db_record['response_time'] = now()
 
         # Check.
         if not response.body.success:
@@ -141,22 +146,21 @@ class ClientAliVerifySms(ClientAliVerify):
 
         # Database.
         code: str = response.body.model.verify_code
-        self.db_record['send_time'] = ':NOW():'
+        self.db_record['scene'] = scene
         self.db_record['phone'] = phone
         self.db_record['code'] = code
-        self.db_record['note'] = note
         self.db_record.record()
 
-        return response.body.model.verify_code
+        return code
 
-    async def async_send(self, phone: str, note: str | None = None) -> str:
+    async def async_send(self, scene: str, phone: str) -> str:
         """
         Asynchronous send random verification code sms.
 
         Parameters
         ----------
+        scene : Usage scene, maxinunMaximum 20 characters.
         phone : Phone number.
-        note : Note.
 
         Returns
         -------
@@ -167,6 +171,7 @@ class ClientAliVerifySms(ClientAliVerify):
         valid_time = self.valid_m * 60
         template_param = '{"code":"##code##","min":"%s"}' % self.valid_m
         request = AliSendRequest(
+            scheme_name=scene,
             phone_number=phone,
             sign_name='速通互联验证码',
             template_code='100001',
@@ -179,7 +184,9 @@ class ClientAliVerifySms(ClientAliVerify):
         runtime = AliRuntimeOptions()
 
         # Request.
+        self.db_record['request_time'] = now()
         response = await self.client.send_sms_verify_code_with_options_async(request, runtime)
+        self.db_record['response_time'] = now()
 
         # Check.
         if not response.body.success:
@@ -187,20 +194,20 @@ class ClientAliVerifySms(ClientAliVerify):
 
         # Database.
         code: str = response.body.model.verify_code
-        self.db_record['send_time'] = ':NOW():'
+        self.db_record['scene'] = scene
         self.db_record['phone'] = phone
         self.db_record['code'] = code
-        self.db_record['note'] = note
-        self.db_record.record()
+        await self.db_record.async_record()
 
-        return response.body.model.verify_code
+        return code
 
-    def check(self, phone: str, code: str) -> bool:
+    def check(self, scene: str, phone: str, code: str) -> bool:
         """
         Check code.
 
         Parameters
         ----------
+        scene : Usage scene, maxinunMaximum 20 characters.
         phone : Phone number.
         code : Verification code.
 
@@ -211,6 +218,7 @@ class ClientAliVerifySms(ClientAliVerify):
 
         # Parameter.
         request = AliCheckRequest(
+            scheme_name=scene,
             phone_number=phone,
             verify_code=code
         )
@@ -228,20 +236,22 @@ class ClientAliVerifySms(ClientAliVerify):
             'SET "verify_time" = NOW(),\n'
             '    "verified" = TRUE\n'
             'WHERE (\n'
-            '    "phone" = :phone\n'
+            '    "scene" = :scene\n'
+            '    AND "phone" = :phone\n'
             '    AND "code" = :code\n'
             ')'
         )
-        self.db_engine.execute(sql, phone=phone, code=code)
+        self.db_engine.sync_engine.execute(sql, scene=scene, phone=phone, code=code)
 
         return True
 
-    async def async_check(self, phone: str, code: str) -> bool:
+    async def async_check(self, scene: str, phone: str, code: str) -> bool:
         """
         Asynchronous check code.
 
         Parameters
         ----------
+        scene : Usage scene, maxinunMaximum 20 characters.
         phone : Phone number.
         code : Verification code.
 
@@ -252,6 +262,7 @@ class ClientAliVerifySms(ClientAliVerify):
 
         # Parameter.
         request = AliCheckRequest(
+            scheme_name=scene,
             phone_number=phone,
             verify_code=code
         )
@@ -269,11 +280,12 @@ class ClientAliVerifySms(ClientAliVerify):
             'SET "verify_time" = NOW(),\n'
             '    "verified" = TRUE\n'
             'WHERE (\n'
-            '    "phone" = :phone\n'
+            '    "scene" = :scene\n'
+            '    AND "phone" = :phone\n'
             '    AND "code" = :code\n'
             ')'
         )
-        self.db_engine.execute(sql)
+        await self.db_engine.async_engine.execute(sql, scene=scene, phone=phone, code=code)
 
         return True
 
@@ -309,7 +321,7 @@ class ClientAliVerifySms(ClientAliVerify):
                         'select': (
                             'SELECT COUNT(1)\n'
                             'FROM "ali_verify_sms"'
-                            'WHERE DATE_PART(\'day\', NOW() - "send_time") = 0'
+                            'WHERE DATE_PART(\'day\', NOW() - "request_time") = 0'
                         ),
                         'comment': 'Request count in the past day.'
                     },
@@ -318,7 +330,7 @@ class ClientAliVerifySms(ClientAliVerify):
                         'select': (
                             'SELECT COUNT(1)\n'
                             'FROM "ali_verify_sms"'
-                            'WHERE DATE_PART(\'day\', NOW() - "send_time") <= 6'
+                            'WHERE DATE_PART(\'day\', NOW() - "request_time") <= 6'
                         ),
                         'comment': 'Request count in the past week.'
                     },
@@ -327,7 +339,7 @@ class ClientAliVerifySms(ClientAliVerify):
                         'select': (
                             'SELECT COUNT(1)\n'
                             'FROM "ali_verify_sms"'
-                            'WHERE DATE_PART(\'day\', NOW() - "send_time") <= 29'
+                            'WHERE DATE_PART(\'day\', NOW() - "request_time") <= 29'
                         ),
                         'comment': 'Request count in the past month.'
                     }
@@ -336,4 +348,4 @@ class ClientAliVerifySms(ClientAliVerify):
         ]
 
         # Build.
-        self.db_engine.build.build(tables=tables, views_stats=views_stats, skip=True)
+        self.db_engine.sync_engine.build(tables=tables, views_stats=views_stats, skip=True)
