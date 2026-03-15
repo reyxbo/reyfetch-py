@@ -38,11 +38,11 @@ class DatabaseORMTableAliVerifySms(rorm.Table):
     id: int = rorm.Field(key_auto=True, comment='ID.')
     request_time: rorm.Datetime = rorm.Field(not_null=True, index_n=True, comment='Request time.')
     response_time: rorm.Datetime = rorm.Field(not_null=True, index_n=True, comment='Response time.')
-    verify_time: rorm.Datetime = rorm.Field(comment='Verification time.')
+    use_time: rorm.Datetime | None = rorm.Field(comment='Use time.')
     scene: str = rorm.Field(rorm.types.VARCHAR(20), not_null=True, index_n=True, comment='Usage scene.')
     phone: str = rorm.Field(rorm.types.CHAR(11), not_null=True, index_n=True, comment='Phone number.')
     code: str = rorm.Field(rorm.types.VARCHAR(8), not_null=True, index_n=True, comment='Verification code.', len_min=4, len_max=8)
-    verified: bool = rorm.Field(field_default='FALSE', not_null=True, comment='Is the verified.')
+    used: bool = rorm.Field(field_default='FALSE', not_null=True, comment='Is the used.')
 
 class ClientAliVerify(ClientAli):
     """
@@ -201,9 +201,9 @@ class ClientAliVerifySms(ClientAliVerify):
 
         return code
 
-    def check(self, scene: str, phone: str, code: str) -> bool:
+    def verify(self, scene: str, phone: str, code: str) -> bool:
         """
-        Check code.
+        Verify code.
 
         Parameters
         ----------
@@ -213,7 +213,7 @@ class ClientAliVerifySms(ClientAliVerify):
 
         Returns
         -------
-        Check result.
+        Verify result.
         """
 
         # Parameter.
@@ -233,8 +233,8 @@ class ClientAliVerifySms(ClientAliVerify):
         # Database.
         sql = (
             f'UPDATE "{DatabaseORMTableAliVerifySms.__tablename__}"\n'
-            'SET "verify_time" = NOW(),\n'
-            '    "verified" = TRUE\n'
+            'SET "use_time" = NOW(),\n'
+            '    "used" = TRUE\n'
             'WHERE (\n'
             '    "scene" = :scene\n'
             '    AND "phone" = :phone\n'
@@ -245,9 +245,9 @@ class ClientAliVerifySms(ClientAliVerify):
 
         return True
 
-    async def async_check(self, scene: str, phone: str, code: str) -> bool:
+    async def async_verify(self, scene: str, phone: str, code: str) -> bool:
         """
-        Asynchronous check code.
+        Asynchronous verify code.
 
         Parameters
         ----------
@@ -257,7 +257,7 @@ class ClientAliVerifySms(ClientAliVerify):
 
         Returns
         -------
-        Check result.
+        Verify result.
         """
 
         # Parameter.
@@ -277,8 +277,8 @@ class ClientAliVerifySms(ClientAliVerify):
         # Database.
         sql = (
             f'UPDATE "{DatabaseORMTableAliVerifySms.__tablename__}"\n'
-            'SET "verify_time" = NOW(),\n'
-            '    "verified" = TRUE\n'
+            'SET "use_time" = NOW(),\n'
+            '    "used" = TRUE\n'
             'WHERE (\n'
             '    "scene" = :scene\n'
             '    AND "phone" = :phone\n'

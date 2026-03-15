@@ -62,12 +62,12 @@ class DatabaseORMTableAliQwen(rorm.Table):
     response_time: rorm.Datetime = rorm.Field(not_null=True, index_n=True, comment='Response time, when is stream response, then is full return after time.')
     messages: str = rorm.Field(rorm.JSONB, not_null=True, comment='Input messages data.')
     reply: str = rorm.Field(rorm.types.TEXT, not_null=True, comment='Output reply text.')
-    think: str = rorm.Field(rorm.types.TEXT, comment='Output deep think text.')
-    web: str = rorm.Field(rorm.JSONB, comment='Web search data.')
+    think: str | None = rorm.Field(rorm.types.TEXT, comment='Output deep think text.')
+    web: str | None = rorm.Field(rorm.JSONB, comment='Web search data.')
     token_total: int = rorm.Field(not_null=True, comment='Usage total Token.')
     token_input: int = rorm.Field(not_null=True, comment='Usage input Token.')
     token_output: int = rorm.Field(not_null=True, comment='Usage output Token.')
-    token_output_think: int = rorm.Field(comment='Usage output think Token.')
+    token_output_think: int | None = rorm.Field(comment='Usage output think Token.')
     model: str = rorm.Field(rorm.types.VARCHAR(100), not_null=True, comment='Model name.')
 
 class ClientAliQwen(ClientAli):
