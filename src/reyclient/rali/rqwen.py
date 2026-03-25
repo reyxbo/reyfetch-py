@@ -20,7 +20,7 @@ from ..rbase import ClientDatabaseRecord
 from .rbase import ClientAli
 
 __all__ = (
-    'DatabaseORMTableAliQwen',
+    'ClientORMTableAliQwen',
     'ClientAliQwen'
 )
 
@@ -50,9 +50,9 @@ type ChatRecordsAppends = list[ChatRecordsAppend]
 ChatReplyGenerator = Generator[str, Any, None]
 ChatThinkGenerator = Generator[str, Any, None]
 
-class DatabaseORMTableAliQwen(rorm.Table):
+class ClientORMTableAliQwen(ClientAli, rorm.Table):
     """
-    Database `ali_qwen` table ORM model.
+    Client `ali_qwen` table ORM model.
     """
 
     __name__ = 'ali_qwen'
@@ -811,7 +811,7 @@ class ClientAliQwen(ClientAli):
         # Parameter.
 
         ## Table.
-        tables = [DatabaseORMTableAliQwen]
+        tables = [ClientORMTableAliQwen]
 
         ## View stats.
         views_stats = [

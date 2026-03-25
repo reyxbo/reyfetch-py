@@ -22,7 +22,7 @@ from ..rbase import ClientDatabaseRecord
 from .rbase import ClientBaidu
 
 __all__ = (
-    'DatabaseORMTableBaiduTrans',
+    'ClientORMTableBaiduTrans',
     'ClientBaidu',
     'ClientBaiduTranslateLangEnum',
     'ClientBaiduTranslateLangAutoEnum',
@@ -32,9 +32,9 @@ __all__ = (
 FanyiResponseResult = TypedDict('FanyiResponseResult', {'src': str, 'dst': str})
 FanyiResponse = TypedDict('FanyiResponse', {'from': str, 'to': str, 'trans_result': list[FanyiResponseResult]})
 
-class DatabaseORMTableBaiduTrans(rorm.Table):
+class ClientORMTableBaiduTrans(ClientBaidu, rorm.Table):
     """
-    Database "baidu_trans" table ORM model.
+    Client "baidu_trans" table ORM model.
     """
 
     __name__ = 'baidu_trans'
@@ -315,7 +315,7 @@ class ClientBaiduTranslate(ClientBaidu):
         # Parameter.
 
         ## Table.
-        tables = [DatabaseORMTableBaiduTrans]
+        tables = [ClientORMTableBaiduTrans]
 
         ## View stats.
         views_stats = [

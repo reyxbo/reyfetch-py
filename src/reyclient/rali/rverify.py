@@ -23,14 +23,14 @@ from ..rbase import ClientDatabaseRecord
 from .rbase import ClientAli
 
 __all__ = (
-    'DatabaseORMTableAliVerifySms',
+    'ClientORMTableAliVerifySms',
     'ClientAliVerify',
     'ClientAliVerifySms'
 )
 
-class DatabaseORMTableAliVerifySms(rorm.Table):
+class ClientORMTableAliVerifySms(ClientAli, rorm.Table):
     """
-    Database `ali_verify_sms` table ORM model.
+    Client `ali_verify_sms` table ORM model.
     """
 
     __name__ = 'ali_verify_sms'
@@ -232,7 +232,7 @@ class ClientAliVerifySms(ClientAliVerify):
 
         # Database.
         sql = (
-            f'UPDATE "{DatabaseORMTableAliVerifySms.__tablename__}"\n'
+            f'UPDATE "{ClientORMTableAliVerifySms.__tablename__}"\n'
             'SET "use_time" = NOW(),\n'
             '    "used" = TRUE\n'
             'WHERE (\n'
@@ -276,7 +276,7 @@ class ClientAliVerifySms(ClientAliVerify):
 
         # Database.
         sql = (
-            f'UPDATE "{DatabaseORMTableAliVerifySms.__tablename__}"\n'
+            f'UPDATE "{ClientORMTableAliVerifySms.__tablename__}"\n'
             'SET "use_time" = NOW(),\n'
             '    "used" = TRUE\n'
             'WHERE (\n'
@@ -301,7 +301,7 @@ class ClientAliVerifySms(ClientAliVerify):
         # Parameter.
 
         ## Table.
-        tables = [DatabaseORMTableAliVerifySms]
+        tables = [ClientORMTableAliVerifySms]
 
         ## View stats.
         views_stats = [
